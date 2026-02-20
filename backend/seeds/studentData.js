@@ -1,0 +1,36 @@
+module.exports = [
+    { branch: "Computer Science", cgpa: 9.4, skills: ["react", "node", "mongodb", "aws"] },
+    { branch: "Computer Science", cgpa: 9.2, skills: ["python", "machine learning", "pandas"] },
+    { branch: "IT", cgpa: 9.1, skills: ["react", "node", "docker"] },
+    { branch: "Electronics", cgpa: 9.0, skills: ["python", "data analysis"] },
+    { branch: "Computer Science", cgpa: 9.3, skills: ["aws", "kubernetes", "docker"] },
+
+    { branch: "Computer Science", cgpa: 8.7, skills: ["react", "javascript"] },
+    { branch: "Mechanical", cgpa: 8.5, skills: ["autocad", "solidworks"] },
+    { branch: "IT", cgpa: 8.6, skills: ["node", "mongodb"] },
+    { branch: "Computer Science", cgpa: 8.8, skills: ["python", "ml", "sql"] },
+    { branch: "Civil", cgpa: 8.3, skills: ["excel", "powerbi"] },
+    { branch: "Electronics", cgpa: 8.4, skills: ["embedded", "c"] },
+    { branch: "Computer Science", cgpa: 8.9, skills: ["react", "node"] },
+    { branch: "IT", cgpa: 8.2, skills: ["docker", "aws"] },
+    { branch: "Computer Science", cgpa: 8.1, skills: ["python", "data analysis"] },
+    { branch: "Mechanical", cgpa: 8.0, skills: ["solidworks"] },
+
+    { branch: "Computer Science", cgpa: 7.8, skills: ["react"] },
+    { branch: "IT", cgpa: 7.6, skills: ["node"] },
+    { branch: "Electronics", cgpa: 7.4, skills: ["python"] },
+    { branch: "Computer Science", cgpa: 7.2, skills: ["mongodb"] },
+    { branch: "Civil", cgpa: 7.5, skills: ["excel"] },
+    { branch: "Mechanical", cgpa: 7.1, skills: ["autocad"] },
+    { branch: "Computer Science", cgpa: 7.9, skills: ["javascript"] },
+    { branch: "IT", cgpa: 7.3, skills: ["sql"] },
+
+    { branch: "Computer Science", cgpa: 6.8, skills: ["react"] },
+    { branch: "Electronics", cgpa: 6.5, skills: ["python"] },
+    { branch: "Mechanical", cgpa: 6.3, skills: ["solidworks"] },
+    { branch: "Civil", cgpa: 6.9, skills: ["excel"] },
+    { branch: "IT", cgpa: 6.4, skills: ["node"] },
+
+    { branch: "Computer Science", cgpa: 5.8, skills: ["react"] },
+    { branch: "Mechanical", cgpa: 5.5, skills: ["autocad"] },
+];
