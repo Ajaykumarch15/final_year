@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import API from "../../services/api";
 import DashboardLayout from "../../components/DashboardLayout";
+import { motion } from "framer-motion";
 
 const ProfilePage = () => {
 
@@ -19,9 +20,12 @@ const ProfilePage = () => {
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
 
+    const [editMode, setEditMode] = useState(false);
+
     useEffect(() => {
 
         const fetchProfile = async () => {
+
             try {
 
                 const res = await API.get("/profile/me");
@@ -39,6 +43,7 @@ const ProfilePage = () => {
             } finally {
                 setLoading(false);
             }
+
         };
 
         fetchProfile();
@@ -52,7 +57,6 @@ const ProfilePage = () => {
         (profile.skills?.length ? 20 : 0) +
         (profile.codingProfiles?.leetcode?.url ? 20 : 0);
 
-
     const handleChange = (e) => {
 
         setProfile({
@@ -61,19 +65,6 @@ const ProfilePage = () => {
         });
 
     };
-
-    const handleSkillsChange = (e) => {
-
-        const skillsArray =
-            e.target.value.split(",").map(s => s.trim());
-
-        setProfile({
-            ...profile,
-            skills: skillsArray
-        });
-
-    };
-
 
     const handleSave = async () => {
 
@@ -85,6 +76,8 @@ const ProfilePage = () => {
 
             alert("Profile updated successfully");
 
+            setEditMode(false);
+
         } catch (err) {
 
             console.error(err);
@@ -95,7 +88,6 @@ const ProfilePage = () => {
         }
 
     };
-
 
     if (loading) {
 
@@ -109,33 +101,92 @@ const ProfilePage = () => {
 
     }
 
+    const leetcodeExists = profile.codingProfiles?.leetcode?.url;
+
     return (
 
         <DashboardLayout>
 
-            <div className="max-w-5xl mx-auto">
+            <div className="max-w-6xl mx-auto">
 
-                <h1 className="text-3xl font-bold mb-8">
-                    Edit Student Profile
-                </h1>
+                {/* HEADER */}
 
-
-                <div className="bg-white shadow rounded-xl p-8 space-y-8">
-
-
-                    {/* Academic Information */}
+                <div className="flex justify-between items-center mb-10">
 
                     <div>
+
+                        <h1 className="text-3xl font-bold">
+                            Student Profile
+                        </h1>
+
+                        <p className="text-slate-500">
+                            Manage your academic and coding profile
+                        </p>
+
+                    </div>
+
+                    {!editMode && (
+
+                        <button
+                            onClick={() => setEditMode(true)}
+                            className="bg-blue-600 text-white px-5 py-2 rounded-lg hover:bg-blue-700"
+                        >
+                            Edit Profile
+                        </button>
+
+                    )}
+
+                </div>
+
+
+
+                {/* PROFILE COMPLETION */}
+
+                <div className="bg-white shadow rounded-xl p-6 mb-10">
+
+                    <div className="flex justify-between mb-2">
+
+                        <h2 className="font-semibold">
+                            Profile Completion
+                        </h2>
+
+                        <span className="font-semibold">
+                            {completion}%
+                        </span>
+
+                    </div>
+
+                    <div className="h-3 bg-slate-200 rounded">
+
+                        <div
+                            className="h-3 bg-green-500 rounded"
+                            style={{ width: `${completion}%` }}
+                        />
+
+                    </div>
+
+                </div>
+
+
+
+                <div className="grid md:grid-cols-2 gap-8">
+
+                    {/* ACADEMIC CARD */}
+
+                    <motion.div
+                        whileHover={{ y: -3 }}
+                        className="bg-white shadow rounded-xl p-6"
+                    >
 
                         <h2 className="text-xl font-semibold mb-4">
                             Academic Information
                         </h2>
 
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
 
                             <div>
 
-                                <label className="text-sm font-semibold block mb-1">
+                                <label className="text-sm font-semibold">
                                     Roll Number
                                 </label>
 
@@ -150,7 +201,7 @@ const ProfilePage = () => {
 
                             <div>
 
-                                <label className="text-sm font-semibold block mb-1">
+                                <label className="text-sm font-semibold">
                                     Branch
                                 </label>
 
@@ -158,6 +209,7 @@ const ProfilePage = () => {
                                     name="branch"
                                     value={profile.branch}
                                     onChange={handleChange}
+                                    disabled={!editMode}
                                     className="w-full border p-2 rounded"
                                 />
 
@@ -166,7 +218,7 @@ const ProfilePage = () => {
 
                             <div>
 
-                                <label className="text-sm font-semibold block mb-1">
+                                <label className="text-sm font-semibold">
                                     CGPA
                                 </label>
 
@@ -176,6 +228,7 @@ const ProfilePage = () => {
                                     step="0.01"
                                     value={profile.cgpa}
                                     onChange={handleChange}
+                                    disabled={!editMode}
                                     className="w-full border p-2 rounded"
                                 />
 
@@ -183,111 +236,34 @@ const ProfilePage = () => {
 
                         </div>
 
-                    </div>
+                    </motion.div>
 
 
-                    {/* Skills */}
 
-                    <div>
+                    {/* CODING PROFILES */}
 
-                        {/* Skills Section */}
-
-                        <div>
-
-                            <h2 className="text-xl font-semibold mb-4">
-                                Technical Skills
-                            </h2>
-
-                            <div className="flex flex-wrap gap-2 mb-3">
-
-                                {profile.skills?.map((skill, index) => (
-
-                                    <span
-                                        key={index}
-                                        className="bg-blue-100 text-blue-700 px-3 py-1 rounded text-sm flex items-center gap-2"
-                                    >
-                                        {skill}
-
-                                        <button
-                                            className="text-red-500"
-                                            onClick={() => {
-                                                const updatedSkills =
-                                                    profile.skills.filter((_, i) => i !== index);
-
-                                                setProfile({
-                                                    ...profile,
-                                                    skills: updatedSkills
-                                                });
-                                            }}
-                                        >
-                                            ✕
-                                        </button>
-
-                                    </span>
-
-                                ))}
-
-                            </div>
-
-
-                            <input
-                                type="text"
-                                placeholder="Type skill and press Enter"
-                                className="w-full border p-2 rounded"
-                                onKeyDown={(e) => {
-
-                                    if (e.key === "Enter") {
-
-                                        e.preventDefault();
-
-                                        const newSkill = e.target.value.trim().toLowerCase();
-
-                                        if (!newSkill) return;
-
-                                        if (!profile.skills.includes(newSkill)) {
-
-                                            setProfile({
-                                                ...profile,
-                                                skills: [...profile.skills, newSkill]
-                                            });
-
-                                        }
-
-                                        e.target.value = "";
-
-                                    }
-
-                                }}
-                            />
-
-                        </div>
-
-                    </div>
-
-
-                    {/* Coding Profiles */}
-
-                    <div>
+                    <motion.div
+                        whileHover={{ y: -3 }}
+                        className="bg-white shadow rounded-xl p-6"
+                    >
 
                         <h2 className="text-xl font-semibold mb-4">
                             Coding Profiles
                         </h2>
 
-                        <div className="grid md:grid-cols-2 gap-6">
+                        <div className="space-y-4">
 
-
-                            {/* LeetCode */}
+                            {/* LEETCODE */}
 
                             <div>
 
-                                <label className="text-sm font-semibold block mb-1">
-                                    LeetCode Profile URL
+                                <label className="text-sm font-semibold">
+                                    LeetCode URL
                                 </label>
 
                                 <input
-                                    type="text"
-                                    placeholder="https://leetcode.com/u/username/"
                                     value={profile.codingProfiles?.leetcode?.url || ""}
+                                    disabled={!editMode || leetcodeExists}
                                     onChange={(e) =>
                                         setProfile({
                                             ...profile,
@@ -303,13 +279,16 @@ const ProfilePage = () => {
                                     className="w-full border p-2 rounded"
                                 />
 
+                                {leetcodeExists && (
+                                    <p className="text-xs text-red-500 mt-1">
+                                        LeetCode URL can only be added once.
+                                    </p>
+                                )}
+
                                 {profile.codingProfiles?.leetcode?.ranking && (
 
-                                    <p className="text-sm text-slate-500 mt-2">
-
-                                        Ranking:
-                                        {profile.codingProfiles.leetcode.ranking}
-
+                                    <p className="text-sm text-slate-500 mt-1">
+                                        Ranking: {profile.codingProfiles.leetcode.ranking}
                                     </p>
 
                                 )}
@@ -321,14 +300,13 @@ const ProfilePage = () => {
 
                             <div>
 
-                                <label className="text-sm font-semibold block mb-1">
-                                    GeeksforGeeks Profile URL
+                                <label className="text-sm font-semibold">
+                                    GeeksforGeeks URL
                                 </label>
 
                                 <input
-                                    type="text"
-                                    placeholder="https://auth.geeksforgeeks.org/user/username"
                                     value={profile.codingProfiles?.geeksforgeeks?.url || ""}
+                                    disabled={!editMode}
                                     onChange={(e) =>
                                         setProfile({
                                             ...profile,
@@ -346,37 +324,101 @@ const ProfilePage = () => {
 
                             </div>
 
-
                         </div>
+
+                    </motion.div>
+
+                </div>
+
+
+
+                {/* SKILLS */}
+
+                <div className="bg-white shadow rounded-xl p-6 mt-8">
+
+                    <h2 className="text-xl font-semibold mb-4">
+                        Technical Skills
+                    </h2>
+
+                    <div className="flex flex-wrap gap-2 mb-4">
+
+                        {profile.skills?.map((skill, index) => (
+
+                            <span
+                                key={index}
+                                className="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-sm flex items-center gap-2"
+                            >
+
+                                {skill}
+
+                                {editMode && (
+
+                                    <button
+                                        className="text-red-500"
+                                        onClick={() => {
+
+                                            const updatedSkills =
+                                                profile.skills.filter((_, i) => i !== index);
+
+                                            setProfile({
+                                                ...profile,
+                                                skills: updatedSkills
+                                            });
+
+                                        }}
+                                    >
+                                        ✕
+                                    </button>
+
+                                )}
+
+                            </span>
+
+                        ))}
 
                     </div>
 
 
-                    {/* Profile Completion */}
+                    {editMode && (
 
-                    <div>
+                        <input
+                            placeholder="Add skill and press Enter"
+                            className="w-full border p-2 rounded"
+                            onKeyDown={(e) => {
 
-                        <h2 className="text-xl font-semibold mb-3">
-                            Profile Completion
-                        </h2>
+                                if (e.key === "Enter") {
 
-                        <div className="h-3 bg-slate-200 rounded">
+                                    e.preventDefault();
 
-                            <div
-                                className="h-3 bg-green-600 rounded"
-                                style={{ width: `${completion}%` }}
-                            />
+                                    const skill = e.target.value.trim().toLowerCase();
 
-                        </div>
+                                    if (!skill) return;
 
-                        <p className="text-sm mt-1">
-                            {completion}% Completed
-                        </p>
+                                    if (!profile.skills.includes(skill)) {
 
-                    </div>
+                                        setProfile({
+                                            ...profile,
+                                            skills: [...profile.skills, skill]
+                                        });
+
+                                    }
+
+                                    e.target.value = "";
+
+                                }
+
+                            }}
+                        />
+
+                    )}
+
+                </div>
 
 
-                    {/* Verification */}
+
+                {/* VERIFICATION */}
+
+                <div className="mt-8 flex justify-between items-center">
 
                     <div>
 
@@ -401,18 +443,19 @@ const ProfilePage = () => {
                     </div>
 
 
-                    {/* Save */}
+                    {editMode && (
 
-                    <button
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="bg-slate-800 text-white px-6 py-2 rounded hover:bg-slate-700"
-                    >
+                        <button
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="bg-slate-900 text-white px-6 py-2 rounded-lg hover:bg-slate-700"
+                        >
 
-                        {saving ? "Saving..." : "Save Changes"}
+                            {saving ? "Saving..." : "Save Changes"}
 
-                    </button>
+                        </button>
 
+                    )}
 
                 </div>
 

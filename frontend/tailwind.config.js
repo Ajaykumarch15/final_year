@@ -20,6 +20,9 @@ export default {
         beige: "#F5EFEB",
         softwhite: "#FFFFFF",
       },
+      fontFamily: {
+        sans: ["Inter", "sans-serif"],
+      },
     },
   },
 
