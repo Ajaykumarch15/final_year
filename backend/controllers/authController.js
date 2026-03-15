@@ -29,5 +29,6 @@ exports.login = async (req, res) => {
     token: generateToken(user),
     userId: user._id,
     role: user.role,
+    name: user.name,
   });
 };
