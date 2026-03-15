@@ -1,0 +1,257 @@
+{
+    "javascript": [
+        "js",
+        "ecmascript",
+        "node javascript"
+    ],
+    "typescript": [
+        "ts"
+    ],
+    "python": [
+        "py"
+    ],
+    "java": [
+        "java8",
+        "java11"
+    ],
+    "c++": [
+        "cpp"
+    ],
+    "c#": [
+        "csharp"
+    ],
+    "golang": [
+        "go"
+    ],
+    "react": [
+        "reactjs",
+        "react.js",
+        "react js"
+    ],
+    "node": [
+        "nodejs",
+        "node.js"
+    ],
+    "angular": [
+        "angularjs"
+    ],
+    "vue": [
+        "vuejs"
+    ],
+    "nextjs": [
+        "next.js"
+    ],
+    "nuxtjs": [
+        "nuxt.js"
+    ],
+    "svelte": [],
+    "jquery": [
+        "jquery.js"
+    ],
+    "html": [
+        "html5"
+    ],
+    "css": [
+        "css3"
+    ],
+    "tailwind": [
+        "tailwindcss"
+    ],
+    "bootstrap": [
+        "bootstrap5"
+    ],
+    "material-ui": [
+        "mui"
+    ],
+    "express": [
+        "expressjs"
+    ],
+    "django": [],
+    "flask": [],
+    "fastapi": [],
+    "spring": [],
+    "springboot": [
+        "spring boot"
+    ],
+    "laravel": [],
+    "rails": [
+        "ruby on rails"
+    ],
+    "asp.net": [
+        "aspnet"
+    ],
+    "mysql": [],
+    "postgresql": [
+        "postgres"
+    ],
+    "mongodb": [
+        "mongo",
+        "mongo db"
+    ],
+    "redis": [],
+    "cassandra": [],
+    "dynamodb": [],
+    "neo4j": [],
+    "sqlite": [],
+    "oracle": [],
+    "firebase": [],
+    "docker": [
+        "docker container"
+    ],
+    "kubernetes": [
+        "k8s"
+    ],
+    "terraform": [],
+    "ansible": [],
+    "jenkins": [],
+    "github actions": [
+        "github ci"
+    ],
+    "gitlab ci": [],
+    "circleci": [],
+    "prometheus": [],
+    "grafana": [],
+    "nginx": [],
+    "haproxy": [],
+    "aws": [
+        "amazon web services"
+    ],
+    "azure": [
+        "microsoft azure"
+    ],
+    "gcp": [
+        "google cloud"
+    ],
+    "digitalocean": [],
+    "heroku": [],
+    "cloudflare": [],
+    "vercel": [],
+    "netlify": [],
+    "linode": [],
+    "tensorflow": [
+        "tensor flow",
+        "tf"
+    ],
+    "pytorch": [
+        "torch"
+    ],
+    "keras": [],
+    "scikit-learn": [
+        "sklearn"
+    ],
+    "xgboost": [],
+    "lightgbm": [],
+    "catboost": [],
+    "opencv": [],
+    "spacy": [],
+    "nltk": [],
+    "huggingface": [],
+    "transformers": [],
+    "machine learning": [
+        "ml",
+        "machine-learning"
+    ],
+    "deep learning": [
+        "dl"
+    ],
+    "natural language processing": [
+        "nlp"
+    ],
+    "computer vision": [
+        "cv"
+    ],
+    "data science": [],
+    "data analysis": [],
+    "pandas": [],
+    "numpy": [],
+    "matplotlib": [],
+    "seaborn": [],
+    "spark": [
+        "apache spark"
+    ],
+    "hadoop": [],
+    "kafka": [
+        "apache kafka"
+    ],
+    "airflow": [
+        "apache airflow"
+    ],
+    "flink": [],
+    "beam": [],
+    "databricks": [],
+    "snowflake": [],
+    "android": [],
+    "ios": [],
+    "react native": [],
+    "flutter": [],
+    "xamarin": [],
+    "cordova": [],
+    "swift": [],
+    "kotlin": [],
+    "dart": [],
+    "php": [],
+    "ruby": [],
+    "scala": [],
+    "rust": [],
+    "bash": [],
+    "linux": [],
+    "git": [],
+    "github": [],
+    "gitlab": [],
+    "system design": [],
+    "microservices": [],
+    "rest api": [
+        "restful api"
+    ],
+    "graphql": [],
+    "websockets": [],
+    "grpc": [],
+    "oauth": [],
+    "jwt": [],
+    "data structures": [
+        "dsa"
+    ],
+    "algorithms": [
+        "algo"
+    ],
+    "object oriented programming": [
+        "oop"
+    ],
+    "functional programming": [],
+    "multithreading": [],
+    "distributed systems": [],
+    "network security": [],
+    "cryptography": [],
+    "penetration testing": [],
+    "ethical hacking": [],
+    "application security": [],
+    "selenium": [],
+    "cypress": [],
+    "playwright": [],
+    "jest": [],
+    "mocha": [],
+    "pytest": [],
+    "junit": [],
+    "testing": [],
+    "debugging": [],
+    "performance tuning": [],
+    "data warehousing": [],
+    "etl": [],
+    "data pipelines": [],
+    "feature engineering": [],
+    "model deployment": [],
+    "mlops": [],
+    "devops": [],
+    "agile": [],
+    "scrum": [],
+    "kanban": [],
+    "ui design": [],
+    "ux design": [],
+    "figma": [],
+    "adobe xd": [],
+    "photoshop": [],
+    "illustrator": [],
+    "tableau": [],
+    "power bi": [],
+    "excel": []
+}

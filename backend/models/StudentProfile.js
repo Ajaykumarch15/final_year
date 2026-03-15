@@ -34,13 +34,23 @@ const studentProfileSchema = new mongoose.Schema(
 
     codingProfiles: {
       leetcode: {
-        problemsSolved: { type: Number, default: 0 },
-        rating: { type: Number, default: 0 },
+        url: String,
+        username: String,
+        ranking: Number,
+        reputation: Number,
+        solvedEasy: Number,
+        solvedMedium: Number,
+        solvedHard: Number
       },
       geeksforgeeks: {
-        problemsSolved: { type: Number, default: 0 },
-        score: { type: Number, default: 0 },
+        url: String,
+        problemsSolved: Number,
+        score: Number,
       },
+    },
+    profileCompletion: {
+      type: Number,
+      default: 0
     },
 
     isVerified: {

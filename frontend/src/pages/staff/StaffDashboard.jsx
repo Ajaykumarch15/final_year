@@ -26,6 +26,10 @@ const StaffDashboard = () => {
     minScore: "",
     skill: "",
     search: "",
+    minEasy: "",
+    minMedium: "",
+    minHard: "",
+    maxRank: ""
   });
 
   // 🔹 Load initial analytics + overview
@@ -150,7 +154,7 @@ const StaffDashboard = () => {
                 </BarChart>
               </ResponsiveContainer>
             </div>
-
+            {/*
             <div className="bg-white p-6 rounded-xl shadow">
               <h2 className="font-semibold mb-4">Score Distribution</h2>
               <ResponsiveContainer width="100%" height={300}>
@@ -168,7 +172,7 @@ const StaffDashboard = () => {
                   <Tooltip />
                 </PieChart>
               </ResponsiveContainer>
-            </div>
+            </div>*/}
 
           </div>
 
@@ -229,6 +233,45 @@ const StaffDashboard = () => {
                 setFilters({ ...filters, skill: e.target.value })
               }
             />
+          </div>
+          <div className="grid md:grid-cols-4 gap-4 mt-4">
+
+            <input
+              type="number"
+              placeholder="Min Easy Solved"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, minEasy: e.target.value })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Min Medium Solved"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, minMedium: e.target.value })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Min Hard Solved"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, minHard: e.target.value })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Max LeetCode Rank"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, maxRank: e.target.value })
+              }
+            />
+
           </div>
 
           <div className="mt-4 flex gap-4">

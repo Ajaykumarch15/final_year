@@ -7,7 +7,7 @@ const {
   getMatchOverview,
   getAnalytics,
   exportOverviewCSV,
-  exportFilteredPDF, getLeaderboard
+  exportFilteredPDF, getLeaderboard, runAIMatching
 } = require("../controllers/matchController");
 
 
@@ -67,5 +67,7 @@ router.get(
   getLeaderboard
 );
 
+// Run AI matching
+router.post("/run-ai", protect, runAIMatching);
 
 module.exports = router;

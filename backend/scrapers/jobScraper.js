@@ -1,37 +1,86 @@
 const puppeteer = require("puppeteer");
+const cheerio = require("cheerio");
 const Job = require("../models/Job");
-const path = require("path");
 
-const scrapeJobs = async () => {
-  console.log("🔍 Job scraping started");
+const URL = "https://ajaykumarch15.github.io/jobscrapetest/";
 
-  const browser = await puppeteer.launch({ headless: true });
-  const page = await browser.newPage();
+async function scrapeJobs() {
+  try {
 
-  const filePath = path.resolve(__dirname, "../../job-portal/index.html");
-  await page.goto(`file://${filePath}`, { waitUntil: "load" });
+    console.log("🔎 Starting job scraper...");
 
-  const jobs = await page.evaluate(() => {
-    const jobElements = document.querySelectorAll(".job-card");
-    const jobList = [];
-
-    jobElements.forEach((job) => {
-      jobList.push({
-        title: job.querySelector(".job-title")?.innerText,
-        company: job.querySelector(".company")?.innerText,
-        description: job.querySelector(".description")?.innerText,
-        skills: ["JavaScript", "Node.js"], // dummy
-        eligibility: "CGPA > 7.0",
-      });
+    const browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-sandbox"]
     });
 
-    return jobList;
-  });
+    const page = await browser.newPage();
 
-  await Job.insertMany(jobs);
-  console.log(`✅ ${jobs.length} jobs scraped & saved`);
+    await page.goto(URL, {
+      waitUntil: "networkidle2",
+      timeout: 0
+    });
 
-  await browser.close();
-};
+    const html = await page.content();
+
+    const $ = cheerio.load(html);
+
+    const jobs = [];
+
+    $(".job-card").each((index, element) => {
+
+      const title = $(element).find(".job-title").text().trim();
+      const company = $(element).find(".company").text().trim();
+      const description = $(element).find(".description").text().trim();
+
+      const skillsText = $(element).find(".skills").text().trim();
+
+      const skills = skillsText
+        .split(",")
+        .map(skill => skill.trim());
+
+      const job = {
+        title,
+        company,
+        description,
+        skills,
+        minCGPA: 6,
+        eligibleBranches: ["CSE", "IT", "ECE"],
+        isActive: true
+      };
+
+      jobs.push(job);
+
+    });
+
+    await browser.close();
+
+    console.log(`📦 ${jobs.length} jobs scraped`);
+
+    // Save jobs in MongoDB
+    for (const job of jobs) {
+
+      await Job.findOneAndUpdate(
+        {
+          title: job.title,
+          company: job.company
+        },
+        job,
+        {
+          upsert: true,
+          new: true
+        }
+      );
+
+    }
+
+    console.log("✅ Jobs stored in database");
+
+  } catch (error) {
+
+    console.error("❌ Job scraper error:", error);
+
+  }
+}
 
 module.exports = scrapeJobs;

@@ -30,7 +30,7 @@ const Sidebar = ({ role }) => {
             My Profile
           </NavLink>
 
-          <NavLink
+          {/*<NavLink
             to="/student/jobs"
             className={({ isActive }) =>
               `block mb-4 p-2 rounded ${isActive ? "bg-slate-700" : "hover:bg-slate-800"
@@ -38,7 +38,7 @@ const Sidebar = ({ role }) => {
             }
           >
             Job Listings
-          </NavLink>
+          </NavLink>*/}
         </>
       )}
 

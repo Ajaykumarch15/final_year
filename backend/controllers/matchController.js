@@ -3,19 +3,67 @@ const StudentProfile = require("../models/StudentProfile");
 const Job = require("../models/Job");
 const { Parser } = require("json2csv");
 const PDFDocument = require("pdfkit");
+const { sendJobMatchEmail } = require("../services/emailService");
+
 exports.buildOverviewData = async (query) => {
-    const { branch, minCgpa, minScore, skill, search } = query;
+
+    const {
+        branch,
+        minCgpa,
+        minScore,
+        skill,
+        search,
+        minEasy,
+        minMedium,
+        minHard,
+        maxRank
+    } = query;
 
     let studentQuery = {};
 
-    if (branch) studentQuery.branch = branch;
-    if (minCgpa) studentQuery.cgpa = { $gte: Number(minCgpa) };
+    // Branch filter
+    if (branch) {
+        studentQuery.branch = branch;
+    }
 
+    // CGPA filter
+    if (minCgpa) {
+        studentQuery.cgpa = { $gte: Number(minCgpa) };
+    }
+
+    // Skill filter
     if (skill) {
         const skillsArray = skill.split(",").map(s => s.toLowerCase());
         studentQuery.skills = { $all: skillsArray };
     }
 
+    // 🔹 LeetCode Filters
+
+    if (minEasy) {
+        studentQuery["codingProfiles.leetcode.solvedEasy"] = {
+            $gte: Number(minEasy)
+        };
+    }
+
+    if (minMedium) {
+        studentQuery["codingProfiles.leetcode.solvedMedium"] = {
+            $gte: Number(minMedium)
+        };
+    }
+
+    if (minHard) {
+        studentQuery["codingProfiles.leetcode.solvedHard"] = {
+            $gte: Number(minHard)
+        };
+    }
+
+    if (maxRank) {
+        studentQuery["codingProfiles.leetcode.ranking"] = {
+            $lte: Number(maxRank)
+        };
+    }
+
+    // Fetch students
     const students = await StudentProfile.find(studentQuery)
         .populate("user", "name email");
 
@@ -33,22 +81,29 @@ exports.buildOverviewData = async (query) => {
 
         if (
             search &&
-            !student.user.name.toLowerCase().includes(search.toLowerCase())
+            !student.user?.name?.toLowerCase().includes(search.toLowerCase())
         ) continue;
 
         overview.push({
-            name: student.user.name,
+            name: student.user?.name,
             rollNo: student.rollNo,
             branch: student.branch,
             cgpa: student.cgpa,
             bestScore,
             totalMatches: matches.length,
+            leetcode: {
+                easy: student?.codingProfiles?.leetcode?.solvedEasy || 0,
+                medium: student?.codingProfiles?.leetcode?.solvedMedium || 0,
+                hard: student?.codingProfiles?.leetcode?.solvedHard || 0,
+                ranking: student?.codingProfiles?.leetcode?.ranking || null
+            }
         });
+
     }
 
     return overview.sort((a, b) => b.bestScore - a.bestScore);
-};
 
+};
 /*
   GET MATCHES FOR LOGGED IN STUDENT
 */
@@ -404,3 +459,116 @@ exports.getLeaderboard = async (req, res) => {
     }
 };
 
+
+async function callAIEngine(student, jobs) {
+
+    const res = await axios.post(
+        "http://localhost:8000/match",
+        {
+            student,
+            jobs
+        }
+    );
+
+    return res.data.matches;
+
+}
+
+exports.runAIMatching = async (req, res) => {
+    try {
+
+        // Get student profile
+        const student = await StudentProfile.findOne({
+            user: req.user.id
+        });
+
+        if (!student) {
+            return res.status(404).json({
+                message: "Student profile not found"
+            });
+        }
+
+        // Get active jobs
+        const jobs = await Job.find({ isActive: true });
+
+        if (!jobs.length) {
+            return res.json({ message: "No jobs available" });
+        }
+
+        // Prepare payload for AI service
+        const payload = {
+            student: {
+                skills: student.skills,
+                cgpa: student.cgpa,
+                branch: student.branch
+            },
+            jobs: jobs.map(job => ({
+                id: job._id,
+                description: job.description,
+                minCGPA: job.minCGPA,
+                eligibleBranches: job.eligibleBranches
+            }))
+        };
+
+        // Call FastAPI AI engine
+        const aiResponse = await axios.post(
+            "http://localhost:8000/match",
+            payload
+        );
+
+        const matches = aiResponse.data.matches;
+        console.log("AI ENGINE RESPONSE:", aiResponse.data);
+
+        // Clear previous matches
+        await Match.deleteMany({ student: student._id });
+
+        // Save new matches
+        const savedMatches = [];
+
+        for (let i = 0; i < matches.length; i++) {
+
+            const jobId = matches[i].jobId;
+            const finalScore = matches[i].finalScore;
+            const skillScore = matches[i].skillScore;
+            const cgpaScore = matches[i].cgpaScore;
+            const branchScore = matches[i].branchScore;
+
+            if (!jobId) continue;
+            const match = await Match.findOneAndUpdate(
+                {
+                    student: student._id,
+                    job: jobId
+                },
+                {
+                    finalScore: finalScore,
+                    skillScore: skillScore,
+                    cgpaScore: cgpaScore,
+                    branchScore: branchScore,
+                    rank: i + 1
+                },
+                {
+                    upsert: true,
+                    new: true
+                }
+            );
+
+            savedMatches.push(match);
+        }
+        console.log("📨 Triggering email for:", req.user.email);
+        await sendJobMatchEmail(req.user.email, matches);
+
+        res.json({
+            message: "AI matching completed",
+            matches: savedMatches
+        });
+
+    } catch (error) {
+
+        console.error("AI Matching Error:", error);
+
+        res.status(500).json({
+            message: "AI matching failed"
+        });
+
+    }
+};
