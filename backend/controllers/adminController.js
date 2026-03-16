@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const StudentProfile = require("../models/StudentProfile");
 const bcrypt = require("bcryptjs");
+const XLSX = require("xlsx");
+
 /*
   GET USERS
 */
@@ -90,9 +92,48 @@ const deleteUser = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+const updateCGPAFromExcel = async (req, res) => {
+  try {
+
+    const filePath = req.file.path;
+
+    const workbook = XLSX.readFile(filePath);
+    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+    const data = XLSX.utils.sheet_to_json(sheet);
+
+    let updated = 0;
+
+    for (const row of data) {
+
+      const rollNo = row.RollNo || row.rollNo;
+      const cgpa = row.CGPA || row.cgpa;
+
+      if (!rollNo || cgpa === undefined) continue;
+
+      const student = await StudentProfile.findOne({ rollNo });
+
+      if (student) {
+        student.cgpa = cgpa;
+        await student.save();
+        updated++;
+      }
+
+    }
+
+    res.json({
+      message: "CGPA updated successfully",
+      updatedStudents: updated,
+    });
+
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
 
 module.exports = {
   getUsers,
   createUser,
   deleteUser,
+  updateCGPAFromExcel,
 };

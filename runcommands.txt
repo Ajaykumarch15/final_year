@@ -1,0 +1,8 @@
+ai-engine- cd ai-engine
+          uvicorn api.app:app --reload --port 8000 
+
+backend- cd backend
+         node server.js
+        
+frontend- cd frontend
+          npm run dev
