@@ -244,41 +244,83 @@ const StaffDashboard = () => {
 
         {analytics && (
 
-          <div className="grid md:grid-cols-2 gap-8 mb-10">
+          <motion.div
+            variants={container}
+            initial="hidden"
+            animate="show"
+            className="grid md:grid-cols-2 gap-8 mb-10"
+          >
 
-            <div className="bg-white p-6 rounded-xl shadow">
+            {/* STUDENTS BY BRANCH */}
 
-              <h2 className="font-semibold mb-4">
+            <motion.div
+              variants={item}
+              whileHover={{ y: -5 }}
+              className="bg-white p-6 rounded-xl shadow-md"
+            >
+
+              <h2 className="font-semibold text-lg mb-6">
                 Students by Branch
               </h2>
 
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={260}>
 
                 <BarChart data={analytics.branchDistribution}>
 
-                  <XAxis dataKey="_id" />
+                  <XAxis dataKey="_id" stroke="#64748b" />
 
-                  <YAxis />
+                  <YAxis stroke="#64748b" />
 
-                  <Tooltip />
+                  <Tooltip
+                    cursor={{ fill: "#f1f5f9" }}
+                    contentStyle={{
+                      borderRadius: "10px",
+                      border: "none",
+                      boxShadow: "0px 4px 15px rgba(0,0,0,0.1)"
+                    }}
+                  />
 
-                  <Bar dataKey="count" fill="#2563eb" />
+                  <Bar
+                    dataKey="count"
+                    radius={[6, 6, 0, 0]}
+                  >
+
+                    {analytics.branchDistribution.map((entry, index) => (
+
+                      <Cell
+                        key={index}
+                        fill={
+                          ["#3B82F6", "#22C55E", "#F59E0B", "#EF4444"][
+                          index % 4
+                          ]
+                        }
+                      />
+
+                    ))}
+
+                  </Bar>
 
                 </BarChart>
 
               </ResponsiveContainer>
 
-            </div>
+            </motion.div>
 
 
 
-            <div className="bg-white p-6 rounded-xl shadow">
+            {/* SCORE DISTRIBUTION */}
+            {/*
+            <motion.div
+              variants={item}
+              whileHover={{ y: -5 }}
+              className="bg-white p-6 rounded-xl shadow-md"
+            >
 
-              <h2 className="font-semibold mb-4">
+              <h2 className="font-semibold text-lg mb-6">
                 Score Distribution
               </h2>
 
-              <ResponsiveContainer width="100%" height={250}>
+              <ResponsiveContainer width="100%" height={260}>
 
                 <PieChart>
 
@@ -286,7 +328,10 @@ const StaffDashboard = () => {
                     data={analytics.scoreBuckets}
                     dataKey="count"
                     nameKey="_id"
+                    innerRadius={60}
                     outerRadius={90}
+                    paddingAngle={4}
+                    label
                   >
 
                     {analytics.scoreBuckets.map((entry, index) => (
@@ -300,15 +345,21 @@ const StaffDashboard = () => {
 
                   </Pie>
 
-                  <Tooltip />
+                  <Tooltip
+                    contentStyle={{
+                      borderRadius: "10px",
+                      border: "none",
+                      boxShadow: "0px 4px 15px rgba(0,0,0,0.1)"
+                    }}
+                  />
 
                 </PieChart>
 
               </ResponsiveContainer>
 
-            </div>
+            </motion.div>*/}
 
-          </div>
+          </motion.div>
 
         )}
 
@@ -318,11 +369,13 @@ const StaffDashboard = () => {
 
         <div className="bg-white p-6 rounded-xl shadow mb-10">
 
-          <h2 className="text-lg font-semibold mb-4">
+          <h2 className="text-lg font-semibold mb-6">
             Recruiter Constraints
           </h2>
 
-          <div className="grid md:grid-cols-4 gap-4">
+          {/* ROW 1 */}
+
+          <div className="grid md:grid-cols-5 gap-4 mb-4">
 
             <input
               placeholder="Search student..."
@@ -331,6 +384,18 @@ const StaffDashboard = () => {
                 setFilters({ ...filters, search: e.target.value })
               }
             />
+
+            <select
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, branch: e.target.value })
+              }
+            >
+              <option value="">All Branches</option>
+              <option value="CSM">CSM</option>
+              <option value="CSD">CSD</option>
+              <option value="CSE">CSE</option>
+            </select>
 
             <input
               type="number"
@@ -360,6 +425,49 @@ const StaffDashboard = () => {
 
           </div>
 
+
+          {/* ROW 2 */}
+
+          <div className="grid md:grid-cols-4 gap-4">
+
+            <input
+              type="number"
+              placeholder="Min Easy Solved"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, minEasy: e.target.value })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Min Medium Solved"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, minMedium: e.target.value })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Min Hard Solved"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, minHard: e.target.value })
+              }
+            />
+
+            <input
+              type="number"
+              placeholder="Max LeetCode Rank"
+              className="border p-2 rounded"
+              onChange={(e) =>
+                setFilters({ ...filters, maxRank: e.target.value })
+              }
+            />
+
+          </div>
+
           <div className="flex gap-4 mt-4 flex-wrap">
 
             <button
@@ -369,7 +477,7 @@ const StaffDashboard = () => {
               Apply Filters
             </button>
 
-            <button
+            {/*<button
               onClick={() => exportData("csv")}
               className="bg-blue-600 text-white px-4 py-2 rounded"
             >
@@ -381,7 +489,7 @@ const StaffDashboard = () => {
               className="bg-green-600 text-white px-4 py-2 rounded"
             >
               Export PDF
-            </button>
+            </button>*/}
 
             <button
               onClick={downloadPDF}

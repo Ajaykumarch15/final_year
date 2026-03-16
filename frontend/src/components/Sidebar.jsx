@@ -92,6 +92,15 @@ const Sidebar = ({ role }) => {
             <FaUserShield />
             Admin Dashboard
           </NavLink>
+          <NavLink
+            to="/admin/upload-cgpa"
+            className={({ isActive }) =>
+              `block mb-4 p-2 rounded ${isActive ? "bg-slate-700" : "hover:bg-slate-800"
+              }`
+            }
+          >
+            Upload CGPA
+          </NavLink>
 
         </div>
 

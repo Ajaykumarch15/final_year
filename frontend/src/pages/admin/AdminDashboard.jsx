@@ -25,6 +25,7 @@ ChartJS.register(ArcElement, Tooltip, Legend);
 const AdminDashboard = () => {
 
   const [users, setUsers] = useState([]);
+  const [allUsers, setAllUsers] = useState([]); // for analytics
   const [total, setTotal] = useState(0);
 
   const [filters, setFilters] = useState({
@@ -43,6 +44,8 @@ const AdminDashboard = () => {
     branch: ""
   });
 
+  /* ================= FETCH USERS ================= */
+
   const fetchUsers = async () => {
 
     try {
@@ -54,6 +57,13 @@ const AdminDashboard = () => {
       setUsers(res.data.users);
       setTotal(res.data.total);
 
+      // fetch all users for analytics
+      const allRes = await API.get("/admin/users", {
+        params: { limit: 1000 }
+      });
+
+      setAllUsers(allRes.data.users);
+
     } catch (err) {
       console.error(err);
     }
@@ -63,6 +73,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     fetchUsers();
   }, [filters]);
+
+  /* ================= HANDLERS ================= */
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -75,6 +87,8 @@ const AdminDashboard = () => {
       page: 1
     });
   };
+
+  /* ================= CREATE USER ================= */
 
   const createUser = async () => {
 
@@ -115,6 +129,8 @@ const AdminDashboard = () => {
 
   };
 
+  /* ================= DELETE USER ================= */
+
   const deleteUser = async (id) => {
 
     if (!window.confirm("Delete this user?")) return;
@@ -132,20 +148,26 @@ const AdminDashboard = () => {
 
   const totalPages = Math.ceil(total / filters.limit);
 
-  const studentCount = users.filter(u => u.role === "student").length;
-  const staffCount = users.filter(u => u.role === "staff").length;
-  const adminCount = users.filter(u => u.role === "admin").length;
+  /* ================= CORRECT COUNTS ================= */
+
+  const studentCount = allUsers.filter(u => u.role === "student").length;
+  const staffCount = allUsers.filter(u => u.role === "staff").length;
+  const adminCount = allUsers.filter(u => u.role === "admin").length;
+
+  /* ================= CHART ================= */
 
   const chartData = {
     labels: ["Students", "Staff", "Admins"],
     datasets: [
       {
+        label: "Users",
         data: [studentCount, staffCount, adminCount],
         backgroundColor: [
           "#3B82F6",
           "#22C55E",
           "#F59E0B"
-        ]
+        ],
+        borderWidth: 0
       }
     ]
   };
@@ -160,8 +182,7 @@ const AdminDashboard = () => {
           Admin Control Panel
         </h1>
 
-
-        {/* STATS */}
+        {/* ================= STATS ================= */}
 
         <div className="grid md:grid-cols-4 gap-6 mb-10">
 
@@ -175,8 +196,7 @@ const AdminDashboard = () => {
 
         </div>
 
-
-        {/* ANALYTICS */}
+        {/* ================= ANALYTICS ================= */}
 
         <div className="grid lg:grid-cols-2 gap-8 mb-10">
 
@@ -187,7 +207,19 @@ const AdminDashboard = () => {
             </h2>
 
             <div className="h-72">
-              <Pie data={chartData} options={{ maintainAspectRatio: false }} />
+
+              <Pie
+                data={chartData}
+                options={{
+                  maintainAspectRatio: false,
+                  plugins: {
+                    legend: {
+                      position: "top"
+                    }
+                  }
+                }}
+              />
+
             </div>
 
           </div>
@@ -195,7 +227,7 @@ const AdminDashboard = () => {
         </div>
 
 
-        {/* CREATE USER */}
+        {/* ================= CREATE USER ================= */}
 
         <div className="bg-white p-6 rounded-xl shadow mb-10">
 
@@ -238,9 +270,11 @@ const AdminDashboard = () => {
           </button>
 
         </div>
-        {/* FILTERS */}
 
-        <div className="bg-white p-6 rounded-xl shadow">
+
+        {/* ================= FILTERS ================= */}
+
+        <div className="bg-white p-6 rounded-xl shadow mb-10">
 
           <h2 className="font-semibold mb-4">
             Filters
@@ -274,7 +308,8 @@ const AdminDashboard = () => {
 
         </div>
 
-        {/* USER TABLE */}
+
+        {/* ================= USER TABLE ================= */}
 
         <div className="bg-white rounded-xl shadow overflow-hidden">
 
@@ -287,15 +322,8 @@ const AdminDashboard = () => {
             >
 
               <div>
-
-                <p className="font-semibold">
-                  {u.name}
-                </p>
-
-                <p className="text-sm text-slate-500">
-                  {u.email}
-                </p>
-
+                <p className="font-semibold">{u.name}</p>
+                <p className="text-sm text-slate-500">{u.email}</p>
               </div>
 
               <div className="flex items-center gap-4">
@@ -324,7 +352,7 @@ const AdminDashboard = () => {
         </div>
 
 
-        {/* PAGINATION */}
+        {/* ================= PAGINATION ================= */}
 
         <div className="flex justify-center gap-4 mt-6">
 
