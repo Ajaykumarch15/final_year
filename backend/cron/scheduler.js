@@ -64,23 +64,51 @@ async function runPlacementPipeline() {
 
   try {
 
+    const pipelineStart = Date.now();
+
     console.log("🚀 Placement pipeline started:", new Date());
 
-    // STEP 1 — Scrape jobs
-    await scrapeJobs();
-    console.log("✅ Job scraping completed");
+    // ================================
+    // STEP 1 — Job Scraping
+    // ================================
+    const scrapeStart = Date.now();
 
-    // STEP 2 — Fetch students
+    await scrapeJobs();
+
+    const scrapeTime = Date.now() - scrapeStart;
+    console.log(`✅ Job scraping completed in ${(scrapeTime / 1000).toFixed(2)} sec`);
+
+    // ================================
+    // STEP 2 — Fetch Data
+    // ================================
+    const fetchStart = Date.now();
+
     const students = await StudentProfile.find().populate("user", "email name");
     const jobs = await Job.find({ isActive: true });
 
-    // STEP 3 — Sync LeetCode
+    const fetchTime = Date.now() - fetchStart;
+    console.log(`📦 Data fetched in ${(fetchTime / 1000).toFixed(2)} sec`);
+
+    // ================================
+    // STEP 3 — LeetCode Sync
+    // ================================
+    const lcStart = Date.now();
+
     await syncLeetCodeProfiles(students);
+
+    const lcTime = Date.now() - lcStart;
+    console.log(`📊 LeetCode sync completed in ${(lcTime / 1000).toFixed(2)} sec`);
 
     console.log(`📊 Students: ${students.length}, Jobs: ${jobs.length}`);
 
-    // STEP 3 — Run AI matching
+    // ================================
+    // STEP 4 — AI Matching
+    // ================================
+    const matchStart = Date.now();
+
     for (const student of students) {
+
+      const studentStart = Date.now();
 
       const payload = {
         student: {
@@ -103,14 +131,11 @@ async function runPlacementPipeline() {
 
       const matches = aiResponse.data.matches;
 
-      // Remove previous matches
       await Match.deleteMany({ student: student._id });
 
-      // Save new matches
       for (let i = 0; i < matches.length; i++) {
 
         const m = matches[i];
-
         if (!m.jobId) continue;
 
         await Match.create({
@@ -122,21 +147,32 @@ async function runPlacementPipeline() {
           finalScore: m.finalScore,
           rank: m.rank || i + 1
         });
-
       }
 
-      console.log(`🎯 Matches updated for student ${student._id}`);
-      await sendJobMatchEmail(student.user.email, matches);
+      const studentTime = Date.now() - studentStart;
+
+      console.log(
+        `🎯 Matches updated for student ${student._id} in ${(studentTime / 1000).toFixed(2)} sec`
+      );
+
+      /* await sendJobMatchEmail(student.user.email, matches); */
     }
+
+    const matchTime = Date.now() - matchStart;
+    console.log(`🧠 AI Matching completed in ${(matchTime / 1000).toFixed(2)} sec`);
+
+    // ================================
+    // TOTAL TIME
+    // ================================
+    const totalTime = Date.now() - pipelineStart;
+
+    console.log(`⏱ Total Pipeline Time: ${(totalTime / 1000).toFixed(2)} sec`);
 
     console.log("✅ Placement pipeline finished");
 
   } catch (error) {
-
     console.error("❌ Pipeline Error:", error);
-
   }
-
 }
 
 // Run every day at 12 PM

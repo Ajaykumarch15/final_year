@@ -1,4 +1,4 @@
-ai-engine- cd ai-engine
+ai-engine->>>>> cd ai-engine
           uvicorn api.app:app --reload --port 8000 
 
 backend- cd backend

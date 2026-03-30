@@ -395,6 +395,9 @@ const StaffDashboard = () => {
               <option value="CSM">CSM</option>
               <option value="CSD">CSD</option>
               <option value="CSE">CSE</option>
+              <option value="ECE">ECE</option>
+              <option value="EEE">EEE</option>
+
             </select>
 
             <input
