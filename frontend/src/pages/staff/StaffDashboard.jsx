@@ -409,22 +409,22 @@ const StaffDashboard = () => {
               }
             />
 
-            <input
+            {/*<input
               type="number"
               placeholder="Min Score"
               className="border p-2 rounded"
               onChange={(e) =>
                 setFilters({ ...filters, minScore: e.target.value })
               }
-            />
+            />*/}
 
-            <input
+            {/* <input
               placeholder="Required Skill"
               className="border p-2 rounded"
               onChange={(e) =>
                 setFilters({ ...filters, skill: e.target.value })
               }
-            />
+            />*/}
 
           </div>
 
